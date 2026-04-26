@@ -1,27 +1,28 @@
 import { notFound } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
-import { CourseView } from '@/components/CourseView';
-import { currentStudent, getCourseBySlug, getCourses } from '@/lib/data';
+import { QuizPlayer } from '@/components/QuizPlayer';
+import { currentStudent, getQuizBySlug, getQuizzes } from '@/lib/data';
 
-// Halaman modul pembelajaran dengan sidebar materi
-export default async function CoursePage({
+// Halaman kuis interaktif
+export default async function QuizPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const course = await getCourseBySlug(params.slug);
-  if (!course) notFound();
+  const quiz = await getQuizBySlug(params.slug);
+  if (!quiz) notFound();
 
   return (
     <>
       <Navbar studentName={currentStudent.name} />
-      <CourseView course={course} />
+      <main className="px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <QuizPlayer quiz={quiz} />
+      </main>
     </>
   );
 }
 
-// Generate static paths saat build untuk performa maksimal
 export async function generateStaticParams() {
-  const courses = await getCourses();
-  return courses.map((c) => ({ slug: c.slug }));
+  const quizzes = await getQuizzes();
+  return quizzes.map((q) => ({ slug: q.slug }));
 }
